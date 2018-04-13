@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class UserController extends Controller
 {
@@ -34,12 +35,13 @@ class UserController extends Controller
                 $user->user_name = $request->username;
                 $user->user_pw = $request->password;
                 $user->user_email = $request->email;
+                $user->token = sha1(time());
                 $user->save();
                 $msg = 'Usuario registrado con exito';
             }else{
                 $msg = 'Ya se encuentra un usuario registrado con ese alias o correo electrónico.';
             }
-            return response()->json(['msg'=>$msg]);
+            return ['msg'=>$msg];
         }
     }
 
@@ -60,9 +62,16 @@ class UserController extends Controller
      * @param  \App\User  $user
      * @return \Illuminate\Http\Response
      */
-    public function show(User $user)
+    public function show($user)
     {
         //
+        $query = 'test5';//Auth::user()->user_name;
+        if(isset($user)){
+            $query = $user;
+        }
+        return User::where('user_name','like',$query)
+            ->orWhere('user_email','like',$query)
+            ->firstOrFail();
     }
 
     /**
