@@ -55,8 +55,8 @@ class LoginController extends Controller
             return response()->json(['status'=>$status,'msg'=>$msg]);
         }
 
-        $check = User::where('user_name','LIKE',$username)
-            ->orWhere('user_email','LIKE',$email)
+        $check = User::where('username','LIKE',$username)
+            ->orWhere('email','LIKE',$email)
             ->first();
         if(!isset($check)) {
             $user = new User();
@@ -86,12 +86,13 @@ class LoginController extends Controller
             $user->save();
             $msg = 'Success to login';
             $status = 'ok';
-            $data = ['status'=>$status,'msg'=>$msg,'token'=>Auth::user()->getRememberToken()];
+            Auth::setUser(Auth::user());
+            $data = ['status'=>$status,'msg'=>$msg,'access_token'=>Auth::user()->getRememberToken()];
         }
         $log->description = "{$msg} with the user: {$request->username}";
         $log->created_at = Carbon::now();
         $log->save();
-        return response()->json($data);
+        return response()->json($data)->cookie('oauth', $data['access_token'], now()->addDays(30)->diffInMinutes());
     }
     public function logout(Request $request) {}
 }

@@ -20,16 +20,6 @@ class UserController extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create(Request $request)
-    {
-        //
-    }
-
-    /**
      * Store a newly created resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
@@ -38,6 +28,7 @@ class UserController extends Controller
     public function store(Request $request)
     {
         //
+        return Auth::user();
     }
 
     /**
@@ -53,8 +44,7 @@ class UserController extends Controller
         if(isset($user)){
             $query = $user;
         }
-        return User::where('user_name','like',$query)
-            ->orWhere('user_email','like',$query)
+        return User::where('username','like',$query)
             ->firstOrFail();
     }
 

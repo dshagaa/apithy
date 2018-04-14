@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Survey;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 class SurveyController extends Controller
@@ -15,6 +16,7 @@ class SurveyController extends Controller
     public function index()
     {
         //
+        return Survey::all();
     }
 
     /**
@@ -22,7 +24,8 @@ class SurveyController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create(Request $request)
+
+    public function store(Request $request)
     {
         //
         $survey = new Survey();
@@ -31,21 +34,9 @@ class SurveyController extends Controller
         $survey->survey_description = $request->description;
         $survey->min_age = $request->min_age;
         $survey->max_age = $request->max_age;
-        $survey->expire_at = $request->expiration_date;
+        $survey->expire_at = Carbon::parse("{$request->expiration_date}{$request->expiration_time}");
 
         $survey->save();
-
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
-    {
-        //
     }
 
     /**
@@ -57,6 +48,15 @@ class SurveyController extends Controller
     public function show(Survey $survey)
     {
         //
+        $data = [
+            'name' => $survey->survey_name,
+            'description' => $survey->survey_description,
+            'min_age' => $survey->min_age,
+            'max_age' => $survey->max_age,
+            'expiration_date' => Carbon::parse($survey->expiration_at)->format('Y-m-d'),
+            'expiration_time' => Carbon::parse($survey->expire_at)->format('H:i')
+        ];
+        return response()->json($data);
     }
 
     /**
@@ -68,6 +68,15 @@ class SurveyController extends Controller
     public function edit(Survey $survey)
     {
         //
+        $data = [
+            'name' => $survey->survey_name,
+            'description' => $survey->survey_description,
+            'min_age' => $survey->min_age,
+            'max_age' => $survey->max_age,
+            'expiration_date' => Carbon::parse($survey->expiration_at)->format('Y-m-d'),
+            'expiration_time' => Carbon::parse($survey->expire_at)->format('H:i')
+        ];
+        return response()->json($data);
     }
 
     /**
@@ -79,7 +88,10 @@ class SurveyController extends Controller
      */
     public function update(Request $request, Survey $survey)
     {
-        //
+        // Solo se puede actualizar la fecha de expiración y la descripción.
+        $survey->survey_description = $request->description;
+        $survey->expire_at = Carbon::parse("{$request->expiration_date}{$request->expiration_time}");
+        $survey->save();
     }
 
     /**
@@ -91,5 +103,6 @@ class SurveyController extends Controller
     public function destroy(Survey $survey)
     {
         //
+        $survey->delete();
     }
 }
