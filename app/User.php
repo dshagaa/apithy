@@ -26,6 +26,7 @@ class User extends Authenticatable
     protected $hidden = [
         'user_id'
     ];
+    protected $primaryKey = 'user_id';
 
     public function perfil() {
         return User::hasOne('App\Perfil','user_id','user_id');
