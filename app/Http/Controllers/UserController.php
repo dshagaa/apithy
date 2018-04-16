@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Psr\Log\NullLogger;
 
 class UserController extends Controller
 {
@@ -37,15 +38,23 @@ class UserController extends Controller
      * @param  \App\User  $user
      * @return \Illuminate\Http\Response
      */
-    public function show($user)
+    public function show($user = NULL)
     {
-        //
-        $query = 'test5';//Auth::user()->user_name;
+        // Test fuera del login
         if(isset($user)){
             $query = $user;
+        }elseif (Auth::user()){
+            $query = Auth::user()->username;
         }
-        return User::where('username','like',$query)
+        else{
+            return redirect('/');
+            $query = 'usuario1';
+        }
+
+        $user = User::with(['profile'])
+            ->where('username','like',$query)
             ->firstOrFail();
+        return response()->json($user);
     }
 
     /**

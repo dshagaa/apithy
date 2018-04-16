@@ -23,13 +23,11 @@ class User extends Authenticatable
      *
      * @var array
      */
-    protected $hidden = [
-        'user_id','password'
-    ];
+    protected $hidden = ['user_id','password','token','remember_token','created_at','updated_at','deleted_at'];
     protected $primaryKey = 'user_id';
 
-    public function perfil() {
-        return User::hasOne('App\Perfil','user_id','user_id');
+    public function profile() {
+        return User::hasOne('App\Profile','user_id','user_id');
     }
 
     public function surveys() {

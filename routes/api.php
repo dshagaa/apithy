@@ -27,21 +27,33 @@ Route::get('logout','Auth\LoginController@logout');
 
     Route::prefix('user')->group(function () {
         Route::post('store','UserController@store');
+        Route::get('/', 'UserController@show');
         Route::get('{user}', 'UserController@show');
     });
 
     Route::prefix('survey')->group( function () {
         Route::get('/','SurveyController@index');
-        Route::post('new','SurveyController@store');
+        Route::post('/','SurveyController@store');
+
         Route::prefix('{survey}')->group(function(){
             Route::get('/','SurveyController@show');
             Route::get('edit','SurveyController@edit');
             Route::post('update','SurveyController@update');
             Route::delete('/','SurveyController@destroy');
+
             Route::prefix('questions')->group(function () {
                 Route::get('/','QuestionController@index');
                 Route::post('/','QuestionController@store');
                 Route::get('{question}','QuestionController@show');
+                Route::post('{question}','QuestionController@update');
+
+                Route::prefix('{question}/options')->group( function () {
+                    Route::get('/','AnswerOptionController@index');
+                    Route::post('/','AnswerOptionController@store');
+                    Route::get('{option}','AnswerOptionController@show');
+                    Route::post('{option}','AnswerOptionController@update');
+                    Route::delete('/','AnswerOptionController@destroy');
+                });
             });
         });
     });
